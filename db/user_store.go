@@ -10,10 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const DBNAME = "hotel-reservation"
 const collNAME = "users"
 
+type Dropper interface {
+	Drop(context.Context) error
+}
+
 type UserStore interface {
+	Dropper
 	GetUserByID(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) (*[]types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
@@ -26,11 +30,16 @@ type MongoUserStore struct {
 	coll   *mongo.Collection
 }
 
-func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
+func NewMongoUserStore(client *mongo.Client, dbname string) *MongoUserStore {
 	return &MongoUserStore{
 		client: client,
-		coll:   client.Database(DBNAME).Collection(collNAME),
+		coll:   client.Database(dbname).Collection(collNAME),
 	}
+}
+
+func (s *MongoUserStore) Drop(ctx context.Context) error {
+	fmt.Println("--- dropping user collection")
+	return s.coll.Drop(ctx)
 }
 
 func (s *MongoUserStore) UpdateUser(ctx context.Context, filter bson.M, update types.UpdateUserParams) error {
