@@ -2,7 +2,10 @@ module github.com/unsuman/hotel-reservation.git
 
 go 1.21.11
 
-require github.com/gofiber/fiber/v2 v2.52.4
+require (
+	github.com/gofiber/fiber/v2 v2.52.4
+	golang.org/x/crypto v0.24.0
+)
 
 require (
 	github.com/golang/snappy v0.0.4 // indirect
@@ -11,7 +14,6 @@ require (
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
-	golang.org/x/crypto v0.24.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 )
