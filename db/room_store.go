@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/unsuman/hotel-reservation.git/types"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -16,12 +17,15 @@ type RoomStore interface {
 type MongoRoomStore struct {
 	client *mongo.Client
 	coll   *mongo.Collection
+
+	HotelStore
 }
 
-func NewMongoRoomStore(client *mongo.Client, dbname string) *MongoRoomStore {
+func NewMongoRoomStore(client *mongo.Client, hotelStore HotelStore, dbname string) *MongoRoomStore {
 	return &MongoRoomStore{
-		client: client,
-		coll:   client.Database(dbname).Collection("rooms"),
+		client:     client,
+		coll:       client.Database(dbname).Collection("rooms"),
+		HotelStore: hotelStore,
 	}
 }
 
@@ -32,6 +36,14 @@ func (s *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*typ
 	}
 
 	room.ID = res.InsertedID.(primitive.ObjectID)
+
+	filter := bson.M{"_id": room.HotelID}
+	update := bson.M{"$push": bson.M{"rooms": room.ID}}
+
+	if err := s.UpdateHotel(ctx, filter, update); err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
 
 	return room, nil
 }

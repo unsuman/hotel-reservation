@@ -48,7 +48,7 @@ func (c *CreateUsersParams) Validate() map[string]string {
 		errors["lastName"] = fmt.Sprintf("last name should be at least %d characters", MIN_LAST_NAME)
 	}
 	if len(c.Pass) < MIN_PASSWORD {
-		errors["password"] = fmt.Sprintf("password should be at least %d characters", MIN_FIRST_NAME)
+		errors["password"] = fmt.Sprintf("password should be at least %d characters", MIN_PASSWORD)
 	}
 
 	if !isEmailValid(c.Email) {

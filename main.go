@@ -32,7 +32,7 @@ func main() {
 
 	apiv1 := app.Group("/api/v1")
 
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.UserDBname))
+	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBname))
 
 	apiv1.Put("/user/:id", userHandler.HandleUpdateUser)
 
