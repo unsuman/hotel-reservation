@@ -32,7 +32,11 @@ func main() {
 
 	apiv1 := app.Group("/api/v1")
 
+	hotelStore := db.NewMongoHotelStore(client, db.DBname)
+	roomStore := db.NewMongoRoomStore(client, hotelStore, db.DBname)
+
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBname))
+	hotelHandler := api.NewHotelHandler(hotelStore, roomStore)
 
 	apiv1.Put("/user/:id", userHandler.HandleUpdateUser)
 
@@ -42,5 +46,7 @@ func main() {
 	apiv1.Get("/user/:id", userHandler.HandleGetUser)
 
 	apiv1.Post("/user", userHandler.HandlePostUser)
+
+	apiv1.Get("/hotels", hotelHandler.GetHotels)
 	app.Listen(*listenAddr)
 }
