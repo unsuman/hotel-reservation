@@ -3,7 +3,7 @@ module github.com/unsuman/hotel-reservation.git
 go 1.21.11
 
 require (
-	github.com/gofiber/fiber/v2 v2.52.4
+	github.com/gofiber/fiber/v2 v2.52.5
 	golang.org/x/crypto v0.24.0
 )
 
