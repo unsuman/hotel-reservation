@@ -8,19 +8,17 @@ import (
 )
 
 type hotelHandler struct {
-	db.HotelStore
-	db.RoomStore
+	store db.Store
 }
 
-func NewHotelHandler(hs db.HotelStore, rs db.RoomStore) *hotelHandler {
+func NewHotelHandler(store *db.Store) *hotelHandler {
 	return &hotelHandler{
-		HotelStore: hs,
-		RoomStore:  rs,
+		store: *store,
 	}
 }
 
 func (s *hotelHandler) GetHotels(c *fiber.Ctx) error {
-	hotels, err := s.HotelStore.GetHotels(c.Context())
+	hotels, err := s.store.HotelStore.GetHotels(c.Context())
 	if err != nil {
 		return err
 	}
@@ -36,7 +34,7 @@ func (s *hotelHandler) GetRooms(c *fiber.Ctx) error {
 	}
 
 	filter := bson.M{"hotelID": oid}
-	hotels, err := s.RoomStore.GetRooms(c.Context(), filter)
+	hotels, err := s.store.RoomStore.GetRooms(c.Context(), filter)
 	if err != nil {
 		return err
 	}

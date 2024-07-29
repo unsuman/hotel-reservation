@@ -16,7 +16,7 @@ import (
 )
 
 type testdb struct {
-	userStore db.UserStore
+	store *db.Store
 }
 
 func setup() *testdb {
@@ -26,12 +26,14 @@ func setup() *testdb {
 	}
 
 	return &testdb{
-		userStore: db.NewMongoUserStore(client, db.UserTestDBname),
+		store: &db.Store{
+			UserStore: db.NewMongoUserStore(client, db.UserTestDBname),
+		},
 	}
 }
 
 func (tdb *testdb) teardown(t *testing.T) {
-	if err := tdb.userStore.Drop(context.TODO()); err != nil {
+	if err := tdb.store.UserStore.Drop(context.TODO()); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -41,7 +43,7 @@ func TestUserCRUD(t *testing.T) {
 	tdb := setup()
 
 	app := fiber.New()
-	userHandler := NewUserHandler(tdb.userStore)
+	userHandler := NewUserHandler(tdb.store)
 
 	defer setup().teardown(t)
 
