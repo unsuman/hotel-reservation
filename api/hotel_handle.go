@@ -17,6 +17,22 @@ func NewHotelHandler(store *db.Store) *hotelHandler {
 	}
 }
 
+func (s *hotelHandler) GetHotel(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	hotel, err := s.store.HotelStore.GetHotelByID(c.Context(), oid)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(hotel)
+
+}
 func (s *hotelHandler) GetHotels(c *fiber.Ctx) error {
 	hotels, err := s.store.HotelStore.GetHotels(c.Context())
 	if err != nil {
