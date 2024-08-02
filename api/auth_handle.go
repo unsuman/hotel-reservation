@@ -25,13 +25,13 @@ func NewAuthHandler(userStore db.UserStore) *UserAuthHandler {
 }
 
 type AuthParams struct {
-	Email    string
-	Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type Resp struct {
-	User  *types.User
-	Token string
+	User  *types.User `json:"user"`
+	Token string      `json:"token"`
 }
 
 func (h *UserAuthHandler) HandleAuthentication(c *fiber.Ctx) error {
@@ -40,11 +40,10 @@ func (h *UserAuthHandler) HandleAuthentication(c *fiber.Ctx) error {
 		return err
 	}
 
-	fmt.Println(authParams)
-
 	user, err := h.userStore.GetUserByEmail(c.Context(), authParams.Email)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
+			c.SendStatus(fiber.StatusBadRequest)
 			return fmt.Errorf("invalid credentials")
 		}
 		return err
@@ -52,6 +51,7 @@ func (h *UserAuthHandler) HandleAuthentication(c *fiber.Ctx) error {
 
 	ok := types.IsPasswordValid(user.EncryptedPass, authParams.Password)
 	if !ok {
+		c.SendStatus(fiber.StatusBadRequest)
 		return fmt.Errorf("invalid credentials")
 	}
 
