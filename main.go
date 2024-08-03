@@ -34,14 +34,16 @@ func main() {
 		app              = fiber.New(config)
 		apiv1WithoutAuth = app.Group("/api")
 
-		hotelStore = db.NewMongoHotelStore(client, db.DBname)
-		roomStore  = db.NewMongoRoomStore(client, hotelStore, db.DBname)
-		userStore  = db.NewMongoUserStore(client, db.DBname)
+		hotelStore   = db.NewMongoHotelStore(client, db.DBname)
+		roomStore    = db.NewMongoRoomStore(client, hotelStore, db.DBname)
+		userStore    = db.NewMongoUserStore(client, db.DBname)
+		bookingStore = db.NewMongoBookingStore(client, db.DBname)
 
 		store = &db.Store{
-			HotelStore: hotelStore,
-			RoomStore:  roomStore,
-			UserStore:  userStore,
+			HotelStore:   hotelStore,
+			RoomStore:    roomStore,
+			UserStore:    userStore,
+			BookingStore: bookingStore,
 		}
 
 		apiv1        = app.Group("/api/v1", middleware.JWTAuthentication(userStore))

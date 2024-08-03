@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/unsuman/hotel-reservation.git/db"
 	"github.com/unsuman/hotel-reservation.git/types"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -31,6 +32,10 @@ func (r *roomHandler) HandleBookRoom(c *fiber.Ctx) error {
 	if err := c.BodyParser(&res); err != nil {
 		return err
 	}
+	err := res.validate()
+	if err != nil {
+		return err
+	}
 
 	roomID := c.Params("id")
 	roomOID, err := primitive.ObjectIDFromHex(roomID)
@@ -40,14 +45,77 @@ func (r *roomHandler) HandleBookRoom(c *fiber.Ctx) error {
 
 	user := c.Context().Value("user").(*types.User)
 
-	fmt.Printf("%+v \n", &types.Booking{
+	booking := types.Booking{
 		RoomID:     roomOID,
 		UserID:     user.ID,
 		FromDate:   res.FromDate,
 		TillDate:   res.TillDate,
 		NumPersons: res.NumPersons,
-	})
+	}
 
-	return nil
+	// ok, err := r.IsRoomAvailable(c, booking)
+	// if err != nil {
+	// 	return err
+	// }
+
+	filter := bson.M{
+		"roomID": booking.RoomID,
+		"fromDate": bson.M{
+			"$gte": booking.FromDate,
+		},
+		"tillDate": bson.M{
+			"$lte": booking.TillDate,
+		},
+	}
+
+	rooms, err := r.store.BookingStore.GetBookings(c.Context(), filter)
+	if err != nil {
+		return err
+	}
+	if len(rooms) != 0 {
+		return fmt.Errorf("no rooms availabe for booking")
+	}
+
+	booked, err := r.store.BookingStore.InsertBooking(c.Context(), &booking)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(booked)
+
+	return c.JSON(booked)
 
 }
+
+func (b BookingRes) validate() error {
+	now := time.Now()
+	fmt.Println(now.After(b.FromDate), now.After(b.TillDate))
+	if now.After(b.FromDate) || now.After(b.TillDate) {
+		return fmt.Errorf("cannot book a room in the past")
+	}
+	return nil
+}
+
+// func (r *roomHandler) IsRoomAvailable(c *fiber.Ctx, booking *types.Booking) (bool, error) {
+// 	filter := bson.M{
+// 		"roomID": booking.RoomID,
+// 		"fromDate": bson.M{
+// 			"$gte": booking.FromDate,
+// 		},
+// 		"tillDate": bson.M{
+// 			"$lte": booking.TillDate,
+// 		},
+// 	}
+// 	rooms, err := r.store.BookingStore.GetBookings(c.Context(), filter)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return true, err
+// 	}
+
+// 	if len(rooms) != 0 {
+// 		return false, nil
+// 	}
+
+// 	return true, nil
+
+// }
