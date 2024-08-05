@@ -46,15 +46,13 @@ func main() {
 			BookingStore: bookingStore,
 		}
 
-		apiv1        = app.Group("/api/v1", middleware.JWTAuthentication(userStore))
-		userHandler  = api.NewUserHandler(store)
-		hotelHandler = api.NewHotelHandler(store)
-		authHandler  = api.NewAuthHandler(userStore)
-		roomHandler  = api.NewRoomHandler(store)
+		apiv1         = app.Group("/api/v1", middleware.JWTAuthentication(userStore))
+		userHandler   = api.NewUserHandler(store)
+		hotelHandler  = api.NewHotelHandler(store)
+		authHandler   = api.NewAuthHandler(userStore)
+		roomHandler   = api.NewRoomHandler(store)
+		bookingHander = api.NewBookingHandler(store)
 	)
-
-	//booking handlers
-	apiv1.Post("/room/:id/book", roomHandler.HandleBookRoom)
 
 	//auth
 	apiv1WithoutAuth.Post("/auth", authHandler.HandleAuthentication)
@@ -70,5 +68,10 @@ func main() {
 	apiv1.Get("/hotels", hotelHandler.GetHotels)
 	apiv1.Get("/hotel/:id/rooms", hotelHandler.GetRooms)
 	apiv1.Get("/hotel/:id", hotelHandler.GetHotel)
+
+	//booking handlers
+	apiv1.Post("/room/:id/book", roomHandler.HandleBookRoom)
+	apiv1.Get("/booking/:id", bookingHander.HandleGetBooking)
+	apiv1.Get("/bookings", bookingHander.HandleGetBookings)
 	app.Listen(*listenAddr)
 }
