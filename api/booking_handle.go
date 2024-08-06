@@ -19,6 +19,25 @@ func NewBookingHandler(store *db.Store) *BookingHandler {
 	}
 }
 
+func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
+	id := c.Params("id")
+	booking, err := h.store.BookingStore.GetBookingByID(c.Context(), id)
+	if err != nil {
+		return err
+	}
+	user, err := getAuthUser(c)
+	if err != nil {
+		return err
+	}
+	if booking.UserID != user.ID {
+		return err
+	}
+	if err := h.store.BookingStore.UpdateBooking(c.Context(), c.Params("id"), bson.M{"canceled": true}); err != nil {
+		return err
+	}
+	return c.JSON("updated")
+}
+
 func (b *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 	id := c.Params("id")
 	user := c.Context().UserValue("user").(*types.User)
