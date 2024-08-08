@@ -59,12 +59,12 @@ func (h *UserAuthHandler) HandleAuthentication(c *fiber.Ctx) error {
 
 	res := &Resp{
 		User:  user,
-		Token: h.createTokenFromUser(user),
+		Token: CreateTokenFromUser(user),
 	}
 	return c.JSON(res)
 }
 
-func (h *UserAuthHandler) createTokenFromUser(user *types.User) string {
+func CreateTokenFromUser(user *types.User) string {
 	claims := jwt.MapClaims{
 		"id":    user.ID,
 		"name":  user.FirstName + user.LastName,
