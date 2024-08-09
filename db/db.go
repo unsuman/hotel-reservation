@@ -1,9 +1,9 @@
 package db
 
 const (
-	DBuri          = "mongodb://localhost:27017"
-	DBname         = "hotel-reservation"
-	UserTestDBname = "hotel-reservation-test"
+	DBuri      = "mongodb://localhost:27017"
+	DBname     = "hotel-reservation"
+	TestDBname = "hotel-reservation-test"
 )
 
 type Store struct {

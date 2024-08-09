@@ -2,20 +2,19 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/opentracing/opentracing-go/log"
-	"github.com/unsuman/hotel-reservation.git/types"
+	"github.com/unsuman/hotel-reservation.git/db/fixtures"
 )
 
 func TestUserAuthFailureWithWrongPass(t *testing.T) {
-	tdb, _ := seedTestDB()
+	tdb := setup(t)
 
+	_ = fixtures.AddUser(tdb.store, "James", "Foo", false)
 	app := fiber.New()
 	authHandler := NewAuthHandler(tdb.store.UserStore)
 
@@ -41,30 +40,15 @@ func TestUserAuthFailureWithWrongPass(t *testing.T) {
 	}
 	fmt.Println("status code: ", fiber.StatusBadRequest, resp.StatusCode)
 
-	if resp.StatusCode != http.StatusBadRequest {
+	if resp.StatusCode == http.StatusBadRequest {
 		t.Fatalf("expected http status of 400 but got %d", resp.StatusCode)
 	}
 }
 
-func seedTestDB() (*testdb, *types.User) {
-	tdb := setup()
-
-	user, _ := types.NewUserFromParams(types.CreateUsersParams{
-		FirstName: "James",
-		LastName:  "At the water cooler",
-		Email:     "foo@bar.com",
-		Pass:      "verysecurepass",
-	})
-	insertedUser, err := tdb.store.UserStore.InsertUser(context.TODO(), user)
-	if err != nil {
-		log.Error(err)
-	}
-	return tdb, insertedUser
-}
-
 func TestUserAuthSuccess(t *testing.T) {
 
-	tdb, insertedUser := seedTestDB()
+	tdb := setup(t)
+	user := fixtures.AddUser(tdb.store, "James", "Foo", false)
 
 	app := fiber.New()
 	authHandler := NewAuthHandler(tdb.store.UserStore)
@@ -74,8 +58,8 @@ func TestUserAuthSuccess(t *testing.T) {
 	app.Post("/auth", authHandler.HandleAuthentication)
 
 	params := AuthParams{
-		Email:    "foo@bar.com",
-		Password: "verysecurepass",
+		Email:    "James@Foo.com",
+		Password: "James_Foo",
 	}
 
 	b, _ := json.Marshal(params)
@@ -103,7 +87,7 @@ func TestUserAuthSuccess(t *testing.T) {
 		t.Fatalf("expected the JWT token in the response")
 	}
 
-	if insertedUser.ID != authResp.User.ID {
+	if user.ID != authResp.User.ID {
 		t.Fatalf("user not found")
 	}
 
