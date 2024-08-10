@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -33,9 +32,10 @@ func TestAdminGetBookings(t *testing.T) {
 
 		bookingHandler = NewBookingHandler(db.store)
 	)
+	userRoute := app.Group("/", middleware.JWTAuthentication(db.store.UserStore))
 
-	admin := app.Group("/admin", middleware.JWTAuthentication(db.store.UserStore), middleware.AdminAuthorization())
-
+	admin := userRoute.Group("/admin", middleware.AdminAuthorization())
+	userRoute.Get("/bookings", bookingHandler.HandleGetBookings)
 	admin.Get("/bookings", bookingHandler.HandleGetBookings)
 
 	req := httptest.NewRequest("GET", "/admin/bookings", nil)
@@ -52,7 +52,7 @@ func TestAdminGetBookings(t *testing.T) {
 		t.Fatalf("expected number of bookings for admin to be 2 but got %v", len(bookings))
 	}
 
-	req = httptest.NewRequest("GET", "/admin/bookings", nil)
+	req = httptest.NewRequest("GET", "/bookings", nil)
 	req.Header.Add("X-Api-Token", CreateTokenFromUser(user))
 
 	resp, err = app.Test(req)
@@ -61,18 +61,9 @@ func TestAdminGetBookings(t *testing.T) {
 	}
 
 	json.NewDecoder(resp.Body).Decode(&bookings)
-	fmt.Println(bookings)
 
-	// req = httptest.NewRequest("GET", "/bookings", nil)
-	// req.Header.Add("X-Api-Token", CreateTokenFromUser(user))
-	// resp, err = app.Test(req)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
+	if len(bookings) != 1 {
+		t.Fatalf("expected number of bookings for user to be 1 but got %v", len(bookings))
+	}
 
-	// json.NewDecoder(resp.Body).Decode(&bookings)
-
-	// if len(bookings) != 1 {
-	// 	t.Fatalf("expected number of bookings for user to be 1 but got %v", len(bookings))
-	// }
 }
