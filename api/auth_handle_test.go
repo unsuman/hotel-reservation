@@ -15,7 +15,9 @@ func TestUserAuthFailureWithWrongPass(t *testing.T) {
 	tdb := setup(t)
 
 	_ = fixtures.AddUser(tdb.store, "James", "Foo", false)
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ErrorHandler: ErrorHandler,
+	})
 	authHandler := NewAuthHandler(tdb.store.UserStore)
 
 	defer tdb.teardown(t)
@@ -50,7 +52,9 @@ func TestUserAuthSuccess(t *testing.T) {
 	tdb := setup(t)
 	user := fixtures.AddUser(tdb.store, "James", "Foo", false)
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ErrorHandler: ErrorHandler,
+	})
 	authHandler := NewAuthHandler(tdb.store.UserStore)
 
 	defer tdb.teardown(t)

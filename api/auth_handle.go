@@ -44,7 +44,7 @@ func (h *UserAuthHandler) HandleAuthentication(c *fiber.Ctx) error {
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			c.SendStatus(fiber.StatusBadRequest)
-			return fmt.Errorf("invalid credentials")
+			return NewError(fiber.StatusBadRequest, "invalid credentials")
 		}
 		return err
 	}
@@ -52,7 +52,7 @@ func (h *UserAuthHandler) HandleAuthentication(c *fiber.Ctx) error {
 	ok := types.IsPasswordValid(user.EncryptedPass, authParams.Password)
 	if !ok {
 		c.SendStatus(fiber.StatusBadRequest)
-		return fmt.Errorf("invalid credentials")
+		return NewError(fiber.StatusBadRequest, "invalid credentials")
 	}
 
 	fmt.Println("Authenticated the user -> ", user)

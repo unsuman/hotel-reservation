@@ -7,16 +7,13 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/unsuman/hotel-reservation.git/api"
-	"github.com/unsuman/hotel-reservation.git/api/middleware"
 	"github.com/unsuman/hotel-reservation.git/db"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var config = fiber.Config{
-	ErrorHandler: func(c *fiber.Ctx, err error) error {
-		return c.JSON(map[string]string{"error": err.Error()})
-	},
+	ErrorHandler: api.ErrorHandler,
 }
 
 func main() {
@@ -46,8 +43,8 @@ func main() {
 			BookingStore: bookingStore,
 		}
 
-		apiv1         = app.Group("/api/v1", middleware.JWTAuthentication(userStore))
-		admin         = apiv1.Group("/admin", middleware.AdminAuthorization())
+		apiv1         = app.Group("/api/v1", api.JWTAuthentication(userStore))
+		admin         = apiv1.Group("/admin", api.AdminAuthorization())
 		userHandler   = api.NewUserHandler(store)
 		hotelHandler  = api.NewHotelHandler(store)
 		authHandler   = api.NewAuthHandler(userStore)

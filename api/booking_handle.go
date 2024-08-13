@@ -1,8 +1,6 @@
 package api
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/unsuman/hotel-reservation.git/db"
 	"github.com/unsuman/hotel-reservation.git/types"
@@ -23,14 +21,14 @@ func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 	id := c.Params("id")
 	booking, err := h.store.BookingStore.GetBookingByID(c.Context(), id)
 	if err != nil {
-		return err
+		return ErrNotResourceNotFound("booking")
 	}
 	user, err := getAuthUser(c)
 	if err != nil {
-		return err
+		return ErrUnAuthorized()
 	}
 	if booking.UserID != user.ID {
-		return err
+		return ErrUnAuthorized()
 	}
 	if err := h.store.BookingStore.UpdateBooking(c.Context(), c.Params("id"), bson.M{"canceled": true}); err != nil {
 		return err
@@ -44,12 +42,12 @@ func (b *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 
 	booking, err := b.store.BookingStore.GetBookingByID(c.Context(), id)
 	if err != nil {
-		return err
+		return ErrNotResourceNotFound("bookings")
 	}
 
 	if user.ID != booking.UserID {
 		c.SendStatus(fiber.StatusUnauthorized)
-		return fmt.Errorf("not authorized")
+		return ErrUnAuthorized()
 	}
 
 	return c.JSON(booking)
@@ -72,7 +70,7 @@ func (b *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 	}
 
 	if len(booking) == 0 {
-		return fmt.Errorf("no bookings")
+		return ErrNotResourceNotFound("bookings")
 	}
 
 	return c.JSON(booking)

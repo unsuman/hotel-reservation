@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/unsuman/hotel-reservation.git/api/middleware"
 	"github.com/unsuman/hotel-reservation.git/db/fixtures"
 	"github.com/unsuman/hotel-reservation.git/types"
 )
@@ -32,9 +31,9 @@ func TestAdminGetBookings(t *testing.T) {
 
 		bookingHandler = NewBookingHandler(db.store)
 	)
-	userRoute := app.Group("/", middleware.JWTAuthentication(db.store.UserStore))
+	userRoute := app.Group("/", JWTAuthentication(db.store.UserStore))
 
-	admin := userRoute.Group("/admin", middleware.AdminAuthorization())
+	admin := userRoute.Group("/admin", AdminAuthorization())
 	userRoute.Get("/bookings", bookingHandler.HandleGetBookings)
 	admin.Get("/bookings", bookingHandler.HandleGetBookings)
 

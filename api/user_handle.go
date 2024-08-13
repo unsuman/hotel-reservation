@@ -32,7 +32,6 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 	filter := bson.M{"_id": oid}
 
 	if err := c.BodyParser(&update); err != nil {
-		fmt.Println(err)
 		return err
 	}
 
