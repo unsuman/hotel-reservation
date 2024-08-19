@@ -31,7 +31,7 @@ func JWTAuthentication(userStore db.UserStore) fiber.Handler {
 
 		user, err := userStore.GetUserByID(context.TODO(), userID)
 		if err != nil {
-			ErrInvalidID()
+			return ErrInvalidID()
 		}
 
 		c.Context().SetUserValue("user", user)

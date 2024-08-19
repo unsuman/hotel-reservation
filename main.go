@@ -80,4 +80,8 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
+
+	db.DBuri = os.Getenv("MONGO_DB_URL")
+	db.DBname = os.Getenv("MONGO_DB_NAME")
+	db.TestDBname = os.Getenv("MONGO_TEST_DB_NAME")
 }

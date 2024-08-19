@@ -1,11 +1,9 @@
 package db
 
-import "os"
-
 var (
-	DBuri      = os.Getenv("MONGO_DB_URL")
-	DBname     = os.Getenv("MONGO_DB_NAME")
-	TestDBname = os.Getenv("MONGO_TEST_DB_NAME")
+	DBuri      string
+	DBname     string
+	TestDBname string
 )
 
 type Pagination struct {
