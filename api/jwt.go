@@ -48,7 +48,7 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 			return nil, ErrUnAuthorized()
 		}
 
-		secret := os.Getenv("JWT_Secret")
+		secret := os.Getenv("JWT_SECRET")
 
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return []byte(secret), nil
