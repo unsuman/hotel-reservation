@@ -5,8 +5,17 @@ This is a backend API for a hotel reservation system built in Go. The API allows
 ## Packages Used
 
 - **github.com/gofiber/fiber/v2**: Web framework for building REST APIs.
+- **github.com/golang-jwt/jwt**: User authentication and authorization using JWT.
 - **github.com/joho/godotenv**: Loads environment variables from a `.env` file.
 - **go.mongodb.org/mongo-driver/mongo**: MongoDB driver for Go.
+
+## Architecture Diagram
+
+<img alt="Architecture Diagram" src="/assets/architecture.png">
+
+## Endpoint Flow
+
+<img alt="Endpoint Flow Diagram" src="/assets/endpoint.png">
 
 ## Endpoints
 
@@ -77,16 +86,6 @@ This is a backend API for a hotel reservation system built in Go. The API allows
 - **GET /api/v1/admin/bookings**: Retrieves all bookings (admin only).
   - **Handler**: `HandleGetBookings`
   - **Implementation**: Fetches all bookings from the database.
-
-## Diagrams
-
-### Architecture Diagram
-
-<img alt="Architecture Diagram" src="/assets/architecture.png">
-
-### Endpoint Flow
-
-<img alt="Endpoint Flow Diagram" src="/assets/endpoint.png">
 
 ## Getting Started
 
