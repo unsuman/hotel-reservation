@@ -1,13 +1,13 @@
-# Hotel Reservation Backend API
+# 🏨 Hotel Reservation Backend API
 
 This is a backend API for a hotel reservation system built in Go. The API allows users to manage hotels, rooms, and bookings. It also includes user authentication and authorization.
 
 ## Packages Used
 
-- **github.com/gofiber/fiber/v2**: Web framework for building REST APIs.
-- **github.com/golang-jwt/jwt**: User authentication and authorization using JWT.
-- **github.com/joho/godotenv**: Loads environment variables from a `.env` file.
-- **go.mongodb.org/mongo-driver/mongo**: MongoDB driver for Go.
+- [Fiber](https://github.com/gofiber/fiber): Web framework for building REST APIs.
+- [JWT](https://github.com/golang-jwt/jwt): User authentication and authorization using JWT.
+- [GoDotEnv](https://github.com/joho/godotenv): Loads environment variables from a `.env` file.
+- [MongoDB Go Driver](https://github.com/mongodb/mongo-go-driver): MongoDB driver for Go.
 
 ## Architecture Diagram
 
